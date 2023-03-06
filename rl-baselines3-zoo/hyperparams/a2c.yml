@@ -1,0 +1,384 @@
+atari:
+  # env_wrapper:
+    # - stable_baselines3.common.atari_wrappers.AtariWrapper
+  frame_stack: 1
+  policy: 'CnnPolicy'
+  n_envs: 64
+  n_timesteps: !!float 1e7
+  # ent_coef: 0.01
+  ent_coef: 0.00
+  vf_coef: 0.25
+  policy_kwargs: "dict(optimizer_class=RMSpropTFLike, optimizer_kwargs=dict(eps=1e-5))"
+
+
+
+MinAtar/Asterix-v0:
+  env_wrapper:
+    - utils.wrappers.MinAtarWrapper
+  frame_stack: 1
+  policy: 'CnnPolicy'
+  n_envs: 10
+  n_timesteps: !!float 1e7
+  ent_coef: 0.01
+  vf_coef: 0.25
+  policy_kwargs: "dict(optimizer_class=RMSpropTFLike, optimizer_kwargs=dict(eps=1e-5))"
+
+MinAtar/Breakout-v0:
+  env_wrapper:
+    - utils.wrappers.MinAtarWrapper
+  frame_stack: 1
+  policy: 'CnnPolicy'
+  n_envs: 10
+  n_timesteps: !!float 1e7
+  ent_coef: 0.01
+
+  vf_coef: 0.25
+  policy_kwargs: "dict(optimizer_class=RMSpropTFLike, optimizer_kwargs=dict(eps=1e-5))"
+
+MinAtar/SpaceInvaders-v0:
+  env_wrapper:
+    - utils.wrappers.MinAtarWrapper
+  frame_stack: 1
+  policy: 'CnnPolicy'
+  n_envs: 10
+  n_timesteps: !!float 1e7
+  ent_coef: 0.01
+  vf_coef: 0.25
+  policy_kwargs: "dict(optimizer_class=RMSpropTFLike, optimizer_kwargs=dict(eps=1e-5))"
+
+
+MinAtar/Seaquest-v0:
+  env_wrapper:
+    - utils.wrappers.MinAtarWrapper
+  frame_stack: 1
+  policy: 'CnnPolicy'
+  n_envs: 10
+  n_timesteps: !!float 1e7
+  ent_coef: 0.01
+  vf_coef: 0.25
+  policy_kwargs: "dict(optimizer_class=RMSpropTFLike, optimizer_kwargs=dict(eps=1e-5))"
+  
+
+
+MinAtar/Freeway-v0:
+  env_wrapper:
+    - utils.wrappers.MinAtarWrapper
+  frame_stack: 1
+  policy: 'CnnPolicy'
+  n_envs: 10
+  n_timesteps: !!float 1e7
+  ent_coef: 0.01
+  vf_coef: 0.25
+  policy_kwargs: "dict(optimizer_class=RMSpropTFLike, optimizer_kwargs=dict(eps=1e-5))"
+
+
+MiniGrid-Empty-5x5-v0:
+  n_envs: 8
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  ent_coef: !!float 2.4657821291692093e-05
+  vf_coef: 0.43450207579988703
+  env_wrapper: 
+    - gym_minigrid.wrappers.FlatObsWrapper
+    # - gym_minigrid.wrappers.NoiseWrapper:
+    #     std: 0.1
+  n_steps: 64  
+  normalize_advantage: True 
+  gae_lambda: 0.9
+  gamma: 0.99 
+  learning_rate: 0.0009651939285194011
+  policy_kwargs: "dict(net_arch=[dict(pi=[64, 64], vf=[64, 64])], activation_fn=nn.Tanh, ortho_init=True)"
+
+breakout:
+  policy: 'CnnPolicy'
+  n_timesteps: !!float 1e7
+  learning_rate: 0.0035601310653035046
+  ent_coef: 0.06111092363007107
+  n_envs: 64
+  vf_coef: 0.18508456498524453
+  n_steps: 16
+  gae_lambda: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  gamma: 0.995
+  max_grad_norm: 0.7
+  policy_kwargs: "dict(net_arch=[dict(pi=[256, 256], vf=[256, 256])], activation_fn=nn.ReLU)"
+
+asterix:
+  policy: 'CnnPolicy'
+  n_timesteps: !!float 5e6
+  n_envs: 64
+  vf_coef: 0.25
+
+freeway:
+  policy: 'CnnPolicy'
+  n_timesteps: !!float 5e6
+  n_envs: 256
+  vf_coef: 0.025605483030381557
+  gamma: 0.99
+  learning_rate: 0.002313920968340922
+  max_grad_norm: 0.7
+  use_rms_prop: True
+  ent_coef: 0.0007166116023238496
+  gae_lambda: 0.9
+  normalize_advantage: False
+  n_steps: 32
+  policy_kwargs: dict(
+            net_arch=[dict(pi=[64, 64], vf=[64, 64])],
+            activation_fn=nn.Tanh,
+            ortho_init=False,
+        )
+
+
+CartPole-v0:
+  n_envs: 8
+  n_timesteps: !!float 5e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+
+
+
+CartPole-v1:
+  n_envs: 8
+  n_timesteps: !!float 5e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+
+LunarLander-v2:
+  n_envs: 8
+  n_timesteps: !!float 1e7
+  policy: 'MlpPolicy'
+  gamma: 0.995
+  n_steps: 5
+  learning_rate: lin_0.00083
+  ent_coef: 0.00001
+
+MountainCar-v0:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  ent_coef: .0
+
+Acrobot-v1:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 5e5
+  policy: 'MlpPolicy'
+  ent_coef: .0
+
+# Almost tuned
+Pendulum-v0:
+  normalize: True
+  n_envs: 8
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
+  gamma: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_7e-4
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+
+freeway:
+  policy: 'CnnPolicy'
+  n_timesteps: !!float 1e6
+  n_envs: 256
+  vf_coef: 0.025605483030381557
+  gamma: 0.99
+  learning_rate: 0.002313920968340922
+  max_grad_norm: 0.7
+  use_rms_prop: True
+  ent_coef: 0.0007166116023238496
+  gae_lambda: 0.9
+  normalize_advantage: False
+  n_steps: 32
+  policy_kwargs: dict(
+            net_arch=[dict(pi=[64, 64], vf=[64, 64])],
+            activation_fn=nn.Tanh,
+            ortho_init=False,
+        )
+          
+# Tuned
+LunarLanderContinuous-v2:
+  normalize: true
+  n_envs: 4
+  n_timesteps: !!float 5e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
+  gamma: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_7e-4
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+
+# Tuned
+MountainCarContinuous-v0:
+  # env_wrapper: utils.wrappers.PlotActionWrapper
+  normalize: true
+  n_envs: 4
+  n_steps: 100
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  use_sde: True
+  sde_sample_freq: 16
+  policy_kwargs: "dict(log_std_init=0.0, ortho_init=False)"
+
+# Tuned
+BipedalWalker-v3:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 5e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
+  gamma: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_0.00096
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+
+# Tuned
+BipedalWalkerHardcore-v3:
+  normalize: true
+  n_envs: 32
+  n_timesteps: !!float 20e7
+  policy: 'MlpPolicy'
+  ent_coef: 0.001
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
+  gamma: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_0.0008
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+
+# Tuned
+HalfCheetahBulletEnv-v0:
+  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
+  normalize: true
+  n_envs: 4
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
+  gamma: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  # Both works
+  learning_rate: lin_0.00096
+  # learning_rate: !!float 3e-4
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False, full_std=True)"
+
+Walker2DBulletEnv-v0:
+  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
+  normalize: true
+  n_envs: 4
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
+  gamma: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_0.00096
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+
+# normalize: true
+# n_envs: 4
+# n_timesteps: !!float 2e6
+# policy: 'MlpPolicy'
+# ent_coef: 0.0
+# max_grad_norm: 0.5
+# n_steps: 32
+# gae_lambda: 0.9
+# vf_coef: 0.4
+# gamma: 0.99
+# use_rms_prop: True
+# normalize_advantage: False
+# learning_rate: 0.0002
+# use_sde: True
+# policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+
+# Tuned
+AntBulletEnv-v0:
+  normalize: true
+  n_envs: 4
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
+  gamma: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_0.00096
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+
+# Tuned
+HopperBulletEnv-v0:
+  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
+  normalize: true
+  n_envs: 4
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
+  gamma: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_0.00096
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+
+# Tuned but unstable
+# Not working without SDE?
+ReacherBulletEnv-v0:
+  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
+  normalize: true
+  n_envs: 4
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
+  gamma: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_0.0008
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
