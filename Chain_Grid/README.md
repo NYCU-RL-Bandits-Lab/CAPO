@@ -3,6 +3,17 @@ Our experiment Chain and GridWorld is conducted on the foundation of [rlx](https
 
 <br/>
 
+## Chain
+The Chain environment has a total of $n+1$ states, and the agent always starts at state $1$. The agent has two actions to choose from at every state, either receive a reward of $0.1$ and terminate immediately, or move one state to the right. While moving right will receive no reward in most states, the transition from $S_{n-1}$ to $S_{n}$ would induce a huge reward of $100$. A well-performing policy should prefer the delayed reward of 100 over the immediate reward of 0.1.
+<center class="half">
+    <kbd><img src=./assets/Chain.png width='650'></kbd>
+</center><br/>
+
+## GridWorld
+TBD
+
+<br/>
+
 ## Folder structure
 ```
 .
