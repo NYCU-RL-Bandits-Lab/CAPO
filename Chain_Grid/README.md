@@ -8,9 +8,7 @@ The Chain environment has a total of $n+1$ states, and the agent always starts a
 
 <center class="half">
     <kbd><img src=./assets/Chain.png width='650'></kbd>
-</center>
-
-<br/>
+</center></br><br/>
 
 ## GridWorld
 TBD
