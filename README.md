@@ -1,12 +1,3 @@
-<!--
- * @Author: Yen-Ju Chen  mru.11@nycu.edu.tw
- * @Date: 2023-03-06 20:40:24
- * @LastEditors: Yen-Ju Chen  mru.11@nycu.edu.tw
- * @LastEditTime: 2023-03-12 11:48:34
- * @FilePath: /mru/CAPO/README.md
- * @Description: 
- * 
--->
 #  Coordinate Ascent Policy Optimization (CAPO)
 **[Coordinate Ascent for Off-Policy RL with Global Convergence Guarantees](https://arxiv.org/abs/2212.05237)**
 
