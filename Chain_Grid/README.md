@@ -61,6 +61,8 @@ Note: Horizon and max episode in each `.sh` can be set to large numbers (we were
 
 ## TODO
 - update some file in `rlx/`
+- stochastic?
+- utilize `./rlx/grid.py` function `compute_value`, `_BFS`
 
 <!-- # rlx: A modular Deep RL library for research
 
