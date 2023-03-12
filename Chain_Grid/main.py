@@ -1,9 +1,17 @@
-import datetime
+# Package
 import os
-import gym, torch
-from tqdm import tqdm
+import gym
+import time
+import yaml
+import torch
 import random
+import argparse
 import numpy as np
+from tqdm import tqdm
+from datetime import datetime
+from torch.utils.tensorboard import SummaryWriter
+
+# Other .py
 from rlx import PGAgent, REINFORCE, ActorCritic, PPO, A2C, OffPolicyActorCritic, CAPO
 from rlx.policy import (DiscreteMLPPolicyValue,
                         DiscreteRNNPolicyValue,
@@ -15,6 +23,7 @@ from rlx.env import (CartPolev0,
                      Chain,
                      Grid)
 
+# setting visible GPU
 os.environ['CUDA_VISIBLE_DEVICES']="-1"
 
 PGAlgos = {
@@ -44,36 +53,61 @@ MAXRewards = {
     'Grid-v0': 100
 }
 
-N_MAX = 0
-
 def main( args ):
-    from torch.utils.tensorboard import SummaryWriter
 
-    environment = GYMEnvs[args.env](size=args.size)
-    Network = DiscreteRNNPolicyValue if args.policytype == 'rnn' else TabularPolicyValue
-    is_capo = (args.algo == 'capo')
-    # print(environment.observation_space, environment.action_spaces)
-    # exit()
-    network = Network(environment, environment.observation_space, environment.action_spaces, n_hidden=args.hidden, is_capo=is_capo)
-    if args.algo == 'offpac': #or args.cyclic:
-        behavior = Network(environment, environment.observation_space, environment.action_spaces, n_hidden=args.hidden, is_behavior=True, is_capo=is_capo)
+    # Tune the state num (args.size) in Chain & GridWorld
+    if args.env in ["Chain-v0", "Grid-v0"]:
+        environment = GYMEnvs[args.env](size=args.size)
+    else:
+        environment = GYMEnvs[args.env]()
+
+    # Define network
+    if args.policytype == 'rnn':
+        network = DiscreteRNNPolicyValue(environment.observation_space, environment.action_spaces, n_hidden=args.hidden)  
+    else:
+        network = TabularPolicyValue(environment, environment.observation_space, environment.action_spaces, n_hidden=args.hidden, is_capo=(args.algo == 'capo'))
+        
+    # Define behavior policy (in CAPO experiment, we only use policytype="mlp")
+    if args.algo == 'offpac' and args.policytype == 'rnn':
+        behavior = DiscreteRNNPolicyValue(environment.observation_space, environment.action_spaces, n_hidden=args.hidden)  
+    elif args.algo == 'offpac' and args.policytype == 'mlp':
+        behavior = TabularPolicyValue(environment, environment.observation_space, environment.action_spaces, n_hidden=args.hidden, is_behavior=True, is_capo=(args.algo == 'capo'))
     elif args.algo == 'capo':
         behavior = network
 
-
+    # agent
     agent = PGAgent(environment)
+
+    # GPU device
     if torch.cuda.is_available():
         network, agent = network.cuda(), agent.cuda()
         if args.algo == 'offpac':
             behavior = behavior.cuda()
 
+    # optimizer
     optimizer = 'rmsprop' if args.policytype == 'rnn' else 'adam'
+    
+    # algorithm
     algorithm = PGAlgos[args.algo](agent, network, args.policytype == 'rnn', optimizer, {'lr': args.lr}, cyclic=args.cyclic)
+    
     # logging object (TensorBoard)
     logger = None
     if len(args.tbdir) != 0:
-        args.tbdir = os.path.join(args.tbdir, str(int(datetime.datetime.now().timestamp())) + f"_{args.size}")
-        logger = SummaryWriter(os.path.join(args.base, f'{args.tbdir}/{args.tbtag}'), flush_secs=10)
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        if os.path.isdir(os.path.join(args.tbdir, f"{args.tbtag}_{timestamp}")):
+            time.sleep(3)
+            timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        if len(args.tbdir) != 0:
+            logger = SummaryWriter(os.path.join(args.tbdir, f"{args.tbtag}-{timestamp}"), flush_secs=10)
+            # save param
+            with open(os.path.join(args.tbdir, f"{args.tbtag}-{timestamp}", "args.yaml"), 'w') as f:
+                yaml.dump(args.__dict__, f, Dumper=yaml.CDumper)
+
+        else:
+            logger = SummaryWriter(os.path.join(args.tbdir, f"{timestamp}"), flush_secs=10)
+            # save param
+            with open(os.path.join(args.tbdir, f"{args.tbtag}", "args.yaml"), 'w') as f:
+                yaml.dump(args.__dict__, f, Dumper=yaml.CDumper)
 
     train_args = {
         'horizon': args.horizon,
@@ -105,8 +139,12 @@ def main( args ):
         # average episodic reward
         running_reward = 0.
 
+        # terminated condition
+        N_MAX = 0
+
         # loop for many episodes
         for episode in range(args.max_episode):
+            
             if args.policytype == 'rnn':
                 global_network_state = torch.zeros(1, network.n_hidden, device=agent.device)
             else:
@@ -116,6 +154,8 @@ def main( args ):
             else:
                 avg_reward, avg_length, avg_ratio = algorithm.train(global_network_state, None, **train_args)
             running_reward = 0.05 * avg_reward + (1 - 0.05) * running_reward
+            
+            # terminated condition
             if running_reward > MAXRewards[args.env]:
                 N_MAX += 1
                 if N_MAX >= 100:
@@ -123,6 +163,7 @@ def main( args ):
             else:
                 N_MAX = 0
 
+            # log
             if episode % args.interval == 0:
                 if tqEpisodes.disable:
                     print(f'[{episode:5d}/{args.max_episode}] Running reward: {running_reward:>4.2f}, Avg. Length: {avg_length:>3.2f}')
@@ -139,36 +180,48 @@ def main( args ):
                 tqEpisodes.update()
 
 if __name__ == '__main__':
-    import argparse
+    
+    # args
     parser = argparse.ArgumentParser()
-    parser.add_argument('--base', type=str, required=False, default='.', help='Base folder (everything is relative to this)')
-    parser.add_argument('--tbdir', type=str, required=False, default='', help='folder name for TensorBoard logging (empty if no TB)')
-    parser.add_argument('--tbtag', type=str, required=False, default='rltag', help='Unique identifier for experiment (for TensorBoard)')
+    
+    # train
     parser.add_argument('--algo', type=str, required=True, choices=PGAlgos.keys(), help='Which algorithm to use')
-    parser.add_argument('--gamma', type=float, required=False, default=0.999, help='Discount factor')
-    parser.add_argument('--render', action='store_true', help='Render environment while sampling episodes')
-    parser.add_argument('--policytype', type=str, required=True, choices=['rnn', 'mlp'], help='Type of policy (MLP or RNN)')
-    parser.add_argument('--interval', type=int, required=False, default=10, help='Logging frequency')
-    parser.add_argument('-K', '--ppo_k_epochs', type=int, required=False, default=4, help='How many iterations of trusted updates')
     parser.add_argument('--batch_size', type=int, required=False, default=8, help='Batch size')
     parser.add_argument('--entropy_reg', type=float, required=False, default=1e-2, help='Regularizer weight for entropy')
-    parser.add_argument('--ppo_clip', type=float, required=False, default=0.2, help='PPO clipping parameter (usually 0.2)')
-    parser.add_argument('--max_episode', type=int, required=False, default=1000, help='Maximum no. of episodes')
+    parser.add_argument('--env', type=str, required=True, choices=GYMEnvs.keys(), help='Gym environment name (string)')
+    parser.add_argument('--eps', type=float, required=False, default=0.3, help='eps')
+    parser.add_argument('--hidden', type=int, required=False, default=256, help='hidden')
     parser.add_argument('--horizon', type=int, required=False, default=500, help='Maximum no. of timesteps')
-    parser.add_argument('--rbsize', type=int, required=False, default=1, help='Size of replay buffer (if needed)')
-    parser.add_argument('--max_rbusage', type=int, required=False, default=5, help='Maximum usage of a replay buffer')
+    parser.add_argument('--interval', type=int, required=False, default=10, help='Logging frequency')
+    parser.add_argument('-K', '--ppo_k_epochs', type=int, required=False, default=4, help='How many iterations of trusted updates')
+    parser.add_argument('--gamma', type=float, required=False, default=0.999, help='Discount factor')
     parser.add_argument('--grad_clip', type=float, required=False, default=0., help='Gradient clipping (0 means no clipping)')
+    parser.add_argument('--lr', type=float, required=False, default=1e-4, help='Learning rate')
+    parser.add_argument('--max_episode', type=int, required=False, default=1000, help='Maximum no. of episodes')
+    parser.add_argument('--max_rbusage', type=int, required=False, default=5, help='Maximum usage of a replay buffer')
+    parser.add_argument('--policytype', type=str, required=True, choices=['rnn', 'mlp'], help='Type of policy (MLP or RNN)')
+    parser.add_argument('--ppo_clip', type=float, required=False, default=0.2, help='PPO clipping parameter (usually 0.2)')
+    parser.add_argument('--rbsize', type=int, required=False, default=1, help='Size of replay buffer (if needed)')
+    parser.add_argument('--size', type=int, required=False, default=10, help='environment size')
     parser.add_argument('--standardize_return', action='store_true', help='standardize all returns/advantages')
+
+    # root / path
+    parser.add_argument('--tbdir', type=str, required=False, default='', help='folder name for TensorBoard logging (empty if no TB)')
+    parser.add_argument('--tbtag', type=str, required=False, default='rltag', help='Unique identifier for experiment (for TensorBoard)')
+    
+    # capo
     parser.add_argument('--cyclic', action='store_true', help='cyclic capo?')
     parser.add_argument('--full', action='store_true', help='full batch capo?')
-    parser.add_argument('--lr', type=float, required=False, default=1e-4, help='Learning rate')
-    parser.add_argument('--eps', type=float, required=False, default=0.3, help='eps')
-    parser.add_argument('--env', type=str, required=True, choices=GYMEnvs.keys(), help='Gym environment name (string)')
+
+    # utils
     parser.add_argument('--seed', type=int, required=False, default=0, help='seed')
-    parser.add_argument('--size', type=int, required=False, default=10, help='size')
-    parser.add_argument('--hidden', type=int, required=False, default=256, help='hidden')
+    parser.add_argument('--render', action='store_true', help='Render environment while sampling episodes')
     args = parser.parse_args()
+    
+    # seed
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
+    
+    # run
     main( args )

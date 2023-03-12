@@ -38,7 +38,7 @@ Note: In order to reproduce the experiment, the helper script for running experi
 - Python 3.8.5
     ```sh
     python3 setup.py install
-    pip3 install gym tqdm matplotlib tensorboard
+    pip3 install gym tqdm matplotlib tensorboard pyyaml
     ```
 
 <br/>
@@ -56,6 +56,11 @@ Note: In order to reproduce the experiment, the helper script for running experi
     Note: make sure your current path is `./Chain_Grid/`
 
 Note: Horizon and max episode in each `.sh` can be set to large numbers (we were using 1000 and 10000), where the `env_size` depends on the result you want to reproduce.
+
+<br/>
+
+## TODO
+- update some file in `rlx/`
 
 <!-- # rlx: A modular Deep RL library for research
 

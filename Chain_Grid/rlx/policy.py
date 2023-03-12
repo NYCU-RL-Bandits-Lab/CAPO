@@ -5,6 +5,7 @@ import torch.nn.functional as F
 import torch.distributions as dist
 from torch.distributions import Categorical
 import traceback
+
 class ActionDistribution(object):
     """ Encapsulates a multi-part action distribution """
 
@@ -180,6 +181,7 @@ class DiscreteMLPPolicyValue(Parametric):
         
         v = self.value(h)
         return None, ActionDistribution(act), v
+
 
 class DiscreteRNNPolicyValue(Parametric):
     """ Recurrent (policy + value) for discrete action space """

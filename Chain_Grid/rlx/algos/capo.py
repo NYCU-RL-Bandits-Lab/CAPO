@@ -7,6 +7,7 @@ from ..rollout import Rollout
 from torch.distributions import Categorical, kl_divergence
 import torch.nn.functional as F
 import numpy as np
+
 class CAPO(PGAlgorithm):
     ''' Off-Policy REINFORCE with Value-baseline. '''
     def __init__(self, agent, network, reccurrent=False, optimizer='adam', optim_kwargs={ }, cyclic=False, eps=0.3):
