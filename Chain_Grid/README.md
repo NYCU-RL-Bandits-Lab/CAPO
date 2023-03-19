@@ -9,7 +9,6 @@ Our experiment Chain and GridWorld is conducted on the foundation of [rlx](https
 - Add [TabularPolicyValue](./rlx/policy.py)
 - [TBD](./rlx/agent.py)
 
-
 <br/>
 
 ## Chain
@@ -29,7 +28,7 @@ python3 main.py {other arguments you want to tune} --stochastic
 <br/>
 
 ## GridWorld
-GridWorld is a `(n_size)×(n_size)` maze. There are 4 action in each state (up, down, right, left) which `deterministically` cause the corresponding state transitions. The reward is -1 for all tranistion until the terminal state is reached and it is 100 for reaching the terminal state. The terminal state is in bottom right coner. The agent will be start at any valid initial point.
+GridWorld is a `(n_size)×(n_size)` maze. There are 4 action in each state (up, down, right, left) which `deterministically` cause the corresponding state transitions. The reward is -1 for all tranistion until the terminal state is reached and it is 100 for reaching the terminal state. To make the environment more complicated, there is a vertical / horizontal wall in the GridWorld. The terminal state is `fixed` in bottom right coner. The agent will be start at `any valid initial point`.
 
 The graph below is a simple example for `4×4` GridWorld:
 
