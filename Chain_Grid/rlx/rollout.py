@@ -211,8 +211,6 @@ class Rollout(object):
             vec_recur_states = torch.cat([q for q, _ in self._states], dim=0)
         else:
             vec_recur_states = None
-        # print(self._actions)
-        # print(n_actions)
         vec_actions = tuple(torch.cat([q[ia] for q in self._actions], dim=0) for ia in range(n_actions))
         vec_rewards = self.rewards.view(-1, 1) # TODO: Do we really need this ?
 

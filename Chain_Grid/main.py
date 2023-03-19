@@ -56,8 +56,10 @@ MAXRewards = {
 def main( args ):
 
     # Tune the state num (args.size) in Chain & GridWorld
-    if args.env in ["Chain-v0", "Grid-v0"]:
-        environment = GYMEnvs[args.env](size=args.size)
+    if args.env == "Grid-v0":
+        environment = GYMEnvs[args.env](size=args.size, use_sparse_reward=args.use_sparse_reward)
+    elif args.env ==  "Chain-v0":
+        environment = GYMEnvs[args.env](size=args.size, stochastic=args.stochastic)
     else:
         environment = GYMEnvs[args.env]()
 
@@ -202,13 +204,17 @@ if __name__ == '__main__':
     parser.add_argument('--policytype', type=str, required=True, choices=['rnn', 'mlp'], help='Type of policy (MLP or RNN)')
     parser.add_argument('--ppo_clip', type=float, required=False, default=0.2, help='PPO clipping parameter (usually 0.2)')
     parser.add_argument('--rbsize', type=int, required=False, default=1, help='Size of replay buffer (if needed)')
-    parser.add_argument('--size', type=int, required=False, default=10, help='environment size')
     parser.add_argument('--standardize_return', action='store_true', help='standardize all returns/advantages')
 
     # root / path
     parser.add_argument('--tbdir', type=str, required=False, default='', help='folder name for TensorBoard logging (empty if no TB)')
     parser.add_argument('--tbtag', type=str, required=False, default='rltag', help='Unique identifier for experiment (for TensorBoard)')
     
+    # chain & gridworld
+    parser.add_argument('--stochastic', action='store_true', help='stochastic chain or not')
+    parser.add_argument('--size', type=int, required=False, default=10, help='environment size')
+    parser.add_argument('--use_sparse_reward', action='store_true', help='gridworld: the greater distance to the termianl, the lesser reward')
+
     # capo
     parser.add_argument('--cyclic', action='store_true', help='cyclic capo?')
     parser.add_argument('--full', action='store_true', help='full batch capo?')

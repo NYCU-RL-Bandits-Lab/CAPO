@@ -84,15 +84,13 @@ class TabularPolicyValue(Parametric):
         self.is_behavior = is_behavior
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.env = env
+
         # Track arguments for further use
         if type(self.observation_space) == gym.spaces.box.Box:
              self.n_state = self.observation_space.shape[0]
         else:
             self.n_state = len(self.observation_space)
-        # self.n_state = self.env.n_state
         self.n_action = self.action_spaces[0].n
-        # print("n_action: ", self.n_action)
-        # exit()
         self.n_hidden = n_hidden
         self.is_capo = is_capo
         
@@ -108,35 +106,29 @@ class TabularPolicyValue(Parametric):
         torch.nn.init.zeros_(self.value.weight)
 
     def forward(self, *states):
-        _, state = states
-        h = F.relu(self.affine(state))
-        h = F.relu(self.hidden(h))
-        t_bk = thetas = self.thetas(h)
-        # print("thetas: ", thetas.size())
         
+        # encode state, approx value
+        _, state = states
+        h = F.relu(self.affine(state))      # first layer
+        h = F.relu(self.hidden(h))          # second layer
+        v = self.value(h)
+        
+        # look up theta from table
         state = state.long()
-        # print(state)
-        # print(self.tabular_thetas)
         thetas = self.tabular_thetas[state].squeeze(1)
-        # print("aaa", thetas)
-        assert t_bk.size() == thetas.size()
-        # exit()
 
         if self.is_behavior:
+            # uniform behavior
             act = Categorical(F.softmax(torch.tensor([[1.0/self.n_action for i in range(self.n_action)]]).to(self.device), dim=-1))
         else:
-            # print(F.softmax(thetas, dim=-1))
-            # print(thetas)
             try:
                 act = Categorical(F.softmax(thetas, dim=-1))
             except ValueError:
                 traceback.print_exc()
                 exit(-1)
-        
-        v = self.value(h)
-        # v = None
+
+        # return theta in capo
         if self.is_capo:
-            # print(thetas)
             return None, ActionDistribution(act), v, thetas
         else:
             return None, ActionDistribution(act), v
@@ -153,15 +145,14 @@ class DiscreteMLPPolicyValue(Parametric):
         assert isinstance(self.action_spaces[0], gym.spaces.Discrete), "Only discrete action allowed"
         self.is_behavior = is_behavior
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        
         # Track arguments for further use
         if type(self.observation_space) == gym.spaces.box.Box:
              self.n_state = self.observation_space.shape[0]
         else:
-            # print("n_state: ", self.n_state)
             self.n_state = len(self.observation_space)
         
         self.n_action = self.action_spaces[0].n
-        # print("n_action: ", self.n_action)
         self.n_hidden = n_hidden
         self.n_hidden = n_hidden
 
@@ -173,8 +164,8 @@ class DiscreteMLPPolicyValue(Parametric):
     def forward(self, *states):
         _, state = states
         h = F.relu(self.affine(state))
+        
         if self.is_behavior:
-
             act = Categorical(F.softmax(torch.tensor([[1/self.n_action for i in range(self.n_action)]]).to(self.device), dim=-1))
         else:
             act = Categorical(F.softmax(self.pi(h), dim=-1))
@@ -194,14 +185,11 @@ class DiscreteRNNPolicyValue(Parametric):
         assert isinstance(self.action_spaces[0], gym.spaces.Discrete), "Only discrete action allowed"
 
         # Track arguments for further use
-        # print(type(self.observation_space))
         if type(self.observation_space) == gym.spaces.box.Box:
              self.n_state = self.observation_space.shape[0]
         else:
             self.n_state = len(self.observation_space)
-        # print("n_state: ", self.n_state)
         self.n_action = self.action_spaces[0].n
-        # print("n_action: ", self.n_action)
         self.n_hidden = n_hidden
 
         # Layer definitions

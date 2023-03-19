@@ -3,8 +3,24 @@ Our experiment Chain and GridWorld is conducted on the foundation of [rlx](https
 
 <br/>
 
+## Main revision
+- Add [Chain & Stochastic Chain](./rlx/env.py)
+- Add [GridWorld](./rlx/grid.py)
+- Add [TabularPolicyValue](./rlx/policy.py)
+- [TBD](./rlx/agent.py)
+
+
+<br/>
+
 ## Chain
 The Chain environment has a total of $n+1$ states, and the agent always starts at state $1$. The agent has two actions to choose from at every state, either receive a reward of $0.1$ and terminate immediately, or move one state to the right. While moving right will receive no reward in most states, the transition from $S_{n-1}$ to $S_{n}$ would induce a huge reward of $100$. A well-performing policy should prefer the delayed reward of 100 over the immediate reward of 0.1.
+
+Also, to include stochasticity to Chain, when moving right in Chain, we modify the stride length to be uniformly random between 0 and 3.
+
+`Note`: To implement Stochastic Chain , add `--stochastic` at the end of the code:
+```sh
+python3 main.py {other arguments you want to tune} --stochastic
+```
 
 <center class="half">
     <kbd><img src=./assets/Chain.png width='650'></kbd>
@@ -13,7 +29,26 @@ The Chain environment has a total of $n+1$ states, and the agent always starts a
 <br/>
 
 ## GridWorld
-TBD
+GridWorld is a `(n_size)×(n_size)` maze. There are 4 action in each state (up, down, right, left) which `deterministically` cause the corresponding state transitions. The reward is -1 for all tranistion until the terminal state is reached and it is 100 for reaching the terminal state. The terminal state is in bottom right coner. The agent will be start at any valid initial point.
+
+The graph below is a simple example for `4×4` GridWorld:
+
+```sh
+W: Wall, G: Goal, A: Agent
+
+Horiziontoal wall         Vertical wall
+   W W W W W W             W W W W W W
+   W _ A _ _ W             W _ W _ _ W
+   W _ W W W W             W _ _ _ _ W
+   W _ _ _ _ W             W _ W _ _ W
+   W _ _ _ G W             W A W _ G W
+   W W W W W W             W W W W W W
+```
+
+`Note`: To implement Sparse Reward GridWorld (The reward is inversely proportional to the distance between next state and terminal state), add `--use_sparse_reward` at the end of the code:
+```sh
+python3 main.py {other arguments you want to tune} --use_sparse_reward
+```
 
 <br/>
 
