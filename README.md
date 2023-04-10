@@ -2,7 +2,7 @@
  * @Author: Yen-Ju Chen  mru.11@nycu.edu.tw
  * @Date: 2023-03-19 12:37:24
  * @LastEditors: Yen-Ju Chen  mru.11@nycu.edu.tw
- * @LastEditTime: 2023-04-10 13:29:01
+ * @LastEditTime: 2023-04-10 13:32:23
  * @FilePath: /mru/CAPO/README.md
  * @Description: 
  * 
@@ -14,7 +14,7 @@ Hsin-En Su, Yen-Ju Chen, [Ping-Chun Hsieh](https://pinghsieh.github.io/), Xi Liu
 
 *26th Conference on Artificial Intelligence and Statistics (AISTATS 2023)*
 
-[\[Paper\]](https://arxiv.org/abs/2212.05237), [\[Poster\]](./assests/CAPO_poster.pdf), [\[Poster\]](./assests/CAPO.pdf), [\[Video\]](https://youtu.be/YivTd68vL0I)
+[\[Paper\]](https://arxiv.org/abs/2212.05237), [\[Poster\]](./assests/CAPO_poster.pdf), [\[Slide\]](./assests/CAPO.pdf), [\[Video\]](https://youtu.be/YivTd68vL0I)
 
 ## Read Me
 Our CAPO code adapt the code of [stable-baseline3](https://github.com/DLR-RM/stable-baselines3) and [rl-baseline3-zoo](https://github.com/DLR-RM/rl-baselines3-zoo) as the foundation, all credit belongs to the owner of these two repos, however CAPO/offpac is implemented by us.
