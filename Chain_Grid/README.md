@@ -7,7 +7,7 @@ Our experiment Chain and GridWorld is conducted on the foundation of [rlx](https
 - Add [Chain & Stochastic Chain](./rlx/env.py)
 - Add [GridWorld](./rlx/grid.py)
 - Add [TabularPolicyValue](./rlx/policy.py)
-- [TBD](./rlx/agent.py)
+<!-- - [TBD](./rlx/agent.py) -->
 
 <br/>
 
@@ -108,8 +108,7 @@ Note: Horizon and max episode in each `.sh` can be set to large numbers (we were
 <br/>
 
 ## TODO
-- update some file in `rlx/`
-- stochastic?
+- update agent, algos
 - utilize `./rlx/grid.py` function `compute_value`, `_BFS`
 
 <!-- # rlx: A modular Deep RL library for research
